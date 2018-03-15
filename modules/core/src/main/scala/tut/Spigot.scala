@@ -24,6 +24,6 @@ class Spigot(os: OutputStream) extends FilterOutputStream(os) {
     if (wasNL && commenting) { wasNL = false; comment() }
     output.append(n.toChar)
     baos.write(n); ifActive(super.write(n))
-    wasNL = (n == '\n'.toInt)
+    wasNL = n == '\n'.toInt
    }
 }

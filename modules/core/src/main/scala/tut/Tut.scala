@@ -29,13 +29,16 @@ object Tut {
       _ <- IO {
         if (mods(Reset)) {
           s.imain.reset()
-          s.imain.settings.processArguments(s.opts, true)
+          s.imain.processArguments(s.opts)
           s
         } else {
           s
         }
       }.liftIO[Tut]
-      _ <- s.isCode.fold(interp(text, lineNumber), out(fixShed(text, mods ++ inv)))
+      _ <- s.isCode.fold(
+             interp(text, lineNumber),
+             out(fixShed(text, mods ++ inv))
+           )
       _ <- checkBoundary(text, "```tut", true, mods)
     } yield ()
 
@@ -44,8 +47,8 @@ object Tut {
       (text.trim.nonEmpty || s.partial.nonEmpty || s.mods(Silent)).whenM[Tut,Unit] {
         for {
           _ <- s.needsNL.whenM(out(""))
-          _ <- (s.mods(Invisible)).unlessM(out(prompt(s) + text))
-          _ <- s.spigot.setActive(!(s.mods(Silent) || (s.mods(Invisible)))).liftIO[Tut]
+          _ <- s.mods(Invisible).unlessM(out(prompt(s) + text))
+          _ <- s.spigot.setActive(!(s.mods(Silent) || s.mods(Invisible))).liftIO[Tut]
           _ <- s.mods(Book).whenM(s.spigot.commentAfter(s.partial + "\n" + text).liftIO[Tut])
           r <- // in 2.13 it's an error to interpret an empty line of text, evidently
                if (text.trim.isEmpty && s.partial.isEmpty) success
@@ -62,7 +65,7 @@ object Tut {
     }
 
   private def checkBoundary(text: String, find: String, code: Boolean, mods: Set[Modifier]): Tut[Unit] =
-    (text.trim.startsWith(find)).whenM(Tut.mod(s => s.copy(isCode = code, needsNL = false, mods = mods)))
+    text.trim.startsWith(find).whenM(Tut.mod(s => s.copy(isCode = code, needsNL = false, mods = mods)))
 
   private def fixShed(text: String, mods: Set[Modifier]): String = {
     val decorationMods = mods.filter(_.isInstanceOf[Decorate])

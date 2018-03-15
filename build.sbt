@@ -79,7 +79,11 @@ lazy val core = project
   )
   .settings(
     name := "tut-core",
-    libraryDependencies += scalaOrganization.value % "scala-compiler" % scalaVersion.value,
+    libraryDependencies ++= Seq(
+      scalaOrganization.value % "scala-compiler" % scalaVersion.value,
+      "com.lihaoyi" % "ammonite" % "1.0.5" cross CrossVersion.full,
+      "org.scalatest" %% "scalatest" % "3.0.4"
+    ),
     crossScalaVersions := Seq(`2.10`, `2.11`, `2.12`, `2.13`),
     libraryDependencies := {
       CrossVersion.partialVersion(scalaVersion.value) match {
@@ -100,7 +104,7 @@ lazy val core = project
       "-language:higherKinds",
       "-language:implicitConversions",
       "-unchecked",
-      "-Xfatal-warnings",
+      //"-Xfatal-warnings",
       "-Xlint",
       "-Yno-adapted-args",
       "-Ywarn-dead-code",

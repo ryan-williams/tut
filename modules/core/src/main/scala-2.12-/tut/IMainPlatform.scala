@@ -9,7 +9,7 @@ import tut.Zed._
 
 trait IMainPlatform {
 
-  protected def newInterpreter(pw: PrintWriter, settings: Settings): IO[IMain] =
-    IO(new IMain(settings, pw))
+  protected def newInterpreter(pw: PrintWriter, settings: Settings): IO[Interp] =
+    IO(Scalac(new IMain(settings, pw)))
 
 }
